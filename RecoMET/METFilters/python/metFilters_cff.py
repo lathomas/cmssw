@@ -7,6 +7,12 @@ from CommonTools.RecoAlgos.HBHENoiseFilter_cfi import *
 ## The CSC beam halo tight filter ____________________________________________||
 from RecoMET.METFilters.CSCTightHaloFilter_cfi import *
 
+## The CSC beam halo tight filter ____________________________________________||
+from RecoMET.METFilters.CSCTightHaloTrkMuUnvetoFilter_cfi import *
+
+## The CSC beam halo tight filter ____________________________________________||
+from RecoMET.METFilters.CSCTightHalo2015Filter_cfi import *
+
 ## The HCAL laser filter _____________________________________________________||
 from RecoMET.METFilters.hcalLaserEventFilter_cfi import *
 
@@ -59,6 +65,8 @@ metFilters = cms.Sequence(
 #   HBHENoiseIsoFilter*
    CSCTightHaloFilter *
 #   hcalLaserEventFilter *
+#  CSCTightHaloTrkMuUnvetoFilter *
+# CSCTightHalo2015Filter *
    EcalDeadCellTriggerPrimitiveFilter* 
 #   *goodVertices * trackingFailureFilter *
    eeBadScFilter
