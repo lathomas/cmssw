@@ -188,7 +188,11 @@ L1ECALPrefiringWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup
 double L1ECALPrefiringWeightProducer::GetPrefiringRate( double eta, double pt, TH2F * h_prefmap /*std::string object, std::string dataera*/ , int fluctuation){
 
   if(h_prefmap==0) return 0.;
-  
+  //Check pt is not above map overflow
+  int nbinsy = h_prefmap->GetNbinsY();
+  double maxy= h_prefmap->GetYaxis()->GetBinLowEdge(nbinsy+1);
+  if(pt>=maxy) pt = maxy-0.01;
+
   int thebin= h_prefmap->FindBin(eta,pt);
   
   double prefrate =  h_prefmap->GetBinContent(thebin);
