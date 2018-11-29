@@ -37,17 +37,19 @@
 enum fluctuations{central=0, up, down};
 
 class L1ECALPrefiringWeightProducer : public edm::stream::EDProducer<> {
-   public:
-      explicit L1ECALPrefiringWeightProducer(const edm::ParameterSet&);
-      ~L1ECALPrefiringWeightProducer();
-
-      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
-   private:
-      virtual void beginStream(edm::StreamID) override;
-      virtual void produce(edm::Event&, const edm::EventSetup&) override;
-      virtual void endStream() override;
-      virtual double GetPrefiringRate( double eta, double pt, std::string object, std::string dataera , int fluctuation);
+public:
+  explicit L1ECALPrefiringWeightProducer(const edm::ParameterSet&);
+  ~L1ECALPrefiringWeightProducer();
+  
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+  
+private:
+  virtual void beginStream(edm::StreamID) override;
+  virtual void produce(edm::Event&, const edm::EventSetup&) override;
+  //  virtual void beginJob();
+  //virtual void endJob(void);
+  virtual void endStream() override;
+  virtual double GetPrefiringRate( double eta, double pt, TH2F * h_prefmap,/*std::string object, std::string dataera, */ int fluctuation);
   
   edm::InputTag srcPhotons_;
   edm::EDGetTokenT<std::vector< pat::Photon> >  photons_token_; 
@@ -55,7 +57,9 @@ class L1ECALPrefiringWeightProducer : public edm::stream::EDProducer<> {
   edm::InputTag srcJets_;
   edm::EDGetTokenT<std::vector< pat::Jet> > jets_token_;
   
-  TFile *  file_prefiringmaps_;
+
+  TH2F * h_prefmap_photon; 
+  TH2F * h_prefmap_jet;
   std::string dataera_;
   bool useEMpt_;
   double prefiringRateSystUnc_;
@@ -67,24 +71,33 @@ L1ECALPrefiringWeightProducer::L1ECALPrefiringWeightProducer(const edm::Paramete
   photons_token_  = consumes<std::vector<pat::Photon> >(  iConfig.getParameter<edm::InputTag>( "ThePhotons" )  );
   jets_token_  = consumes<std::vector<pat::Jet> >(  iConfig.getParameter<edm::InputTag>( "TheJets" )  );
 
-  std::string fname =  iConfig.getParameter<std::string>( "L1Maps" );
-  file_prefiringmaps_ = new TFile(  fname.c_str(),"open" );
   dataera_ =  iConfig.getParameter<std::string>( "DataEra" ) ;
   useEMpt_  =  iConfig.getParameter<bool>( "UseJetEMPt" ) ; 
   prefiringRateSystUnc_ =  iConfig.getParameter<double>( "PrefiringRateSystematicUncty" ) ;
 
+
+  TFile *  file_prefiringmaps_;
+  std::string fname =  iConfig.getParameter<std::string>( "L1Maps" );
+  file_prefiringmaps_ = new TFile(  fname.c_str(),"read" );
+  TString mapphotonfullname= "L1prefiring_photonptvseta_"+ dataera_; 
+  h_prefmap_photon =(TH2F*) file_prefiringmaps_->Get(mapphotonfullname);
+  TString mapjetfullname= (useEMpt_) ? "L1prefiring_jetemptvseta_"+ dataera_  :  "L1prefiring_jetptvseta_"+ dataera_ ; 
+  h_prefmap_jet =(TH2F*) file_prefiringmaps_->Get(mapjetfullname);
+  file_prefiringmaps_->Close();
   
   produces<double>( "NonPrefiringProb" ).setBranchAlias( "NonPrefiringProb");
   produces<double>( "NonPrefiringProbUp" ).setBranchAlias( "NonPrefiringProbUp");
   produces<double>( "NonPrefiringProbDown" ).setBranchAlias( "NonPrefiringProbDown");
+
+  
 
 }
 
 
 L1ECALPrefiringWeightProducer::~L1ECALPrefiringWeightProducer()
 {
- 
 }
+
 
 
 void
@@ -114,7 +127,7 @@ L1ECALPrefiringWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup
        if( fabs(eta_gam) <2.) continue;
        if( fabs(eta_gam) >3.) continue;
        affectedphotons.push_back((*photon));
-       double prefiringprob_gam=  GetPrefiringRate( eta_gam, pt_gam, "photonptvseta" , dataera_ , fluct);  
+       double prefiringprob_gam=  GetPrefiringRate( eta_gam, pt_gam, h_prefmap_photon, fluct);  
        NonPrefiringProba[fluct] *= (1.-prefiringprob_gam);
      }
      
@@ -130,40 +143,34 @@ L1ECALPrefiringWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup
 
        //Loop over photons to remove overlap
        double nonprefiringprobfromoverlappingphotons =1.;
-       std::vector<int> idx_overlappingphoton; 
        for( std::vector<pat::Photon>::const_iterator photon = affectedphotons.begin(); photon != affectedphotons.end(); photon++ ) {
 	 double pt_gam= (&*photon)->pt();
 	 double eta_gam=  (&*photon)->eta();
 	 double phi_gam=  (&*photon)->phi();
 	 double dR = reco::deltaR( eta_jet,phi_jet,eta_gam,phi_gam );
 	 if(dR>0.4)continue;
-	 double prefiringprob_gam =  GetPrefiringRate( eta_gam, pt_gam, "photonptvseta" , dataera_ , fluct);
+	 double prefiringprob_gam =  GetPrefiringRate( eta_gam, pt_gam, h_prefmap_photon , fluct);
 	 nonprefiringprobfromoverlappingphotons  *= (1.-prefiringprob_gam) ;
-	 idx_overlappingphoton.push_back(photon-affectedphotons.begin()); 
        }
        
        
        double ptem_jet =  pt_jet*(jet->neutralEmEnergyFraction()+jet->chargedEmEnergyFraction());
-       double prefiringprob_jet = (useEMpt_) ? GetPrefiringRate( eta_jet, ptem_jet, "jetemptvseta" , dataera_ , fluct) : GetPrefiringRate( eta_jet, pt_jet, "jetptvseta" , dataera_ , fluct);
+       double prefiringprob_jet = (useEMpt_) ? GetPrefiringRate( eta_jet, ptem_jet, h_prefmap_jet , fluct) : GetPrefiringRate( eta_jet, pt_jet , h_prefmap_jet , fluct);
        //useEMpt =true if one wants to use maps parametrized vs Jet EM pt instead of pt.
        double nonprefiringprobfromoverlappingjet =(1.-prefiringprob_jet);
        //If there are no overlapping photons, just multiply by the jet non prefiring rate
        if(nonprefiringprobfromoverlappingphotons ==1.)    NonPrefiringProba[fluct]*= (1.-prefiringprob_jet);
-       //If overlapping photons have a non prefiring rate larger than the jet, then replace these weights by the jet one, and remove the photons from the affectedphotons vector
+       //If overlapping photons have a non prefiring rate larger than the jet, then replace these weights by the jet one
        else if(nonprefiringprobfromoverlappingphotons > nonprefiringprobfromoverlappingjet ) {
-	 if(nonprefiringprobfromoverlappingphotons !=0)NonPrefiringProba[fluct]*= nonprefiringprobfromoverlappingjet /nonprefiringprobfromoverlappingphotons;
-	 else NonPrefiringProba[fluct]=0;
-	 for(unsigned int i = 0; i< idx_overlappingphoton.size() ; i++){
-	   int idx= idx_overlappingphoton[i];
-	   affectedphotons[idx] = affectedphotons.back();
-	   affectedphotons.pop_back();
-	 }
+	 if(nonprefiringprobfromoverlappingphotons !=0.)NonPrefiringProba[fluct]*= nonprefiringprobfromoverlappingjet /nonprefiringprobfromoverlappingphotons;
+	 else NonPrefiringProba[fluct]=0.;
+	 
+	 
        }
        //If overlapping photons have a non prefiring rate smaller than the jet, don't consider the jet in the event weight
        else if(nonprefiringprobfromoverlappingphotons < nonprefiringprobfromoverlappingjet ) NonPrefiringProba[fluct]*=1.;
-       
-     }
      
+     }
    }
    
    //   std::cout << NonPrefiringProba[0]<<", "<< NonPrefiringProba[1]<<", "<< NonPrefiringProba[2]<<", "<<std::endl;
@@ -177,23 +184,23 @@ L1ECALPrefiringWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup
 }
 
 
-double L1ECALPrefiringWeightProducer::GetPrefiringRate( double eta, double pt, std::string object, std::string dataera , int fluctuation){
-  std::vector <double> prefiring_rate={0.,0.,0.};
+double L1ECALPrefiringWeightProducer::GetPrefiringRate( double eta, double pt, TH2F * h_prefmap /*std::string object, std::string dataera*/ , int fluctuation){
 
-  TString mapfullname= "L1prefiring_"+ object+"_"+ dataera;
-  TH2F * h =(TH2F*) file_prefiringmaps_->Get(mapfullname);
-    
-  if(h==0) return 0.;
+  if(h_prefmap==0) return 0.;
+  //Check pt is not above map overflow
+  int nbinsy = h_prefmap->GetNbinsY();
+  double maxy= h_prefmap->GetYaxis()->GetBinLowEdge(nbinsy+1);
+  if(pt>=maxy) pt = maxy-0.01;
+  int thebin= h_prefmap->FindBin(eta,pt);
   
-  int thebin= h->FindBin(eta,pt);
+  double prefrate =  h_prefmap->GetBinContent(thebin);
   
-  double centralvalue = h->GetBinContent(thebin);
-  //  if(centralvalue!=0) std::cout <<"Value, object, pt, eta" << centralvalue<<", " << object <<", "<< pt<<", "<<eta<<std::endl;
-  if(fluctuation == central) return  centralvalue;
-  if(fluctuation == up) return TMath::Min(TMath::Max(centralvalue +  h->GetBinError(thebin), (1.+prefiringRateSystUnc_)*centralvalue),1.);
-  if(fluctuation == down) return TMath::Max(TMath::Min(centralvalue -  h->GetBinError(thebin), (1.-prefiringRateSystUnc_)*centralvalue),0.);
-
-  return 0.;
+  if(fluctuation == up) prefrate = TMath::Min(TMath::Max(prefrate +  h_prefmap->GetBinError(thebin), (1.+prefiringRateSystUnc_)*prefrate),1.);
+  if(fluctuation == down) prefrate = TMath::Max(TMath::Min(prefrate -  h_prefmap->GetBinError(thebin), (1.-prefiringRateSystUnc_)*prefrate),0.);    
+  
+  return prefrate;
+  
+  
 }
 
 

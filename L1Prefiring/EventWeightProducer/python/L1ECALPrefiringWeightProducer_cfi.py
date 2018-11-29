@@ -8,4 +8,3 @@ prefiringweight = cms.EDProducer("L1ECALPrefiringWeightProducer",
                                  UseJetEMPt = cms.bool(True),
                                  PrefiringRateSystematicUncty = cms.double(0.2)
                                  )
-
