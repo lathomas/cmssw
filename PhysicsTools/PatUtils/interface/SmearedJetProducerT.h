@@ -226,8 +226,8 @@ public:
       }
 
       double jet_resolution = resolution.getResolution(
-          {{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, *rho}});
-      double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetPt, jet.pt()}, {JME::Binning::JetEta, jet.eta()}},
+						       {{JME::Binning::JetPt, TMath::Max(jet.pt(),30.)}, {JME::Binning::JetEta, jet.eta()}, {JME::Binning::Rho, *rho}});
+      double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetPt, TMath::Max(jet.pt(),30.)}, {JME::Binning::JetEta, jet.eta()}},
                                                    m_systematic_variation,
                                                    m_uncertaintySource);
       if (m_debug) {
