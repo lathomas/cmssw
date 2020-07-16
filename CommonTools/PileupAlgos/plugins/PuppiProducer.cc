@@ -173,7 +173,9 @@ void PuppiProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       pReco.id = 0; 
       if (std::abs(pReco.charge) == 0){ pReco.id = 0; }
       if (std::abs(pReco.charge) > 0){
-        if (lPack->fromPV() == 0){ pReco.id = 2; } // 0 is associated to PU vertex
+	if (pvCol->size() >= 3 && lPack->fromPV() == 0 && std::abs(pDZ) <0.2 && (lPack->fromPV(1) >=2 || lPack->fromPV(2) >=2)) { pReco.id = 1; }
+	else if (pvCol->size() == 2 && lPack->fromPV() == 0 && std::abs(pDZ) <0.2 && (lPack->fromPV(1) >=2)) { pReco.id = 1; }
+	else if (lPack->fromPV() == 0){ pReco.id = 2; }
         else if (lPack->fromPV() == (pat::PackedCandidate::PVUsedInFit)){ pReco.id = 1; }
         else if (lPack->fromPV() == (pat::PackedCandidate::PVTight) || lPack->fromPV() == (pat::PackedCandidate::PVLoose)){ 
           pReco.id = 0;
