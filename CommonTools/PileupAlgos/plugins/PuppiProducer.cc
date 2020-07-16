@@ -135,10 +135,12 @@ void PuppiProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
       }
       int tmpFromPV = 0;  
+      bool isfromPUvtx1or2 = false;
       // mocking the miniAOD definitions
       if (std::abs(pReco.charge) > 0){
         if (closestVtx != nullptr && pVtxId > 0) tmpFromPV = 0;
         if (closestVtx != nullptr && pVtxId == 0) tmpFromPV = 3;
+	if (closestVtx != nullptr && (pVtxId == 1 || pVtxId == 2) ) isfromPUvtx1or2 = true;
         if (closestVtx == nullptr && closestVtxForUnassociateds == 0) tmpFromPV = 2;
         if (closestVtx == nullptr && closestVtxForUnassociateds != 0) tmpFromPV = 1;
       }
@@ -147,7 +149,8 @@ void PuppiProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       pReco.id = 0; 
       if (std::abs(pReco.charge) == 0){ pReco.id = 0; }
       else{
-        if (tmpFromPV == 0){ pReco.id = 2; } // 0 is associated to PU vertex
+	if (tmpFromPV == 0 && isfromPUvtx1or2 && std::abs(pDZ) <0.2 ){  pReco.id = 1; }
+        else if (tmpFromPV == 0){ pReco.id = 2; } // 0 is associated to PU vertex
         else if (tmpFromPV == 3){ pReco.id = 1; }
         else if (tmpFromPV == 1 || tmpFromPV == 2){ 
           pReco.id = 0;
