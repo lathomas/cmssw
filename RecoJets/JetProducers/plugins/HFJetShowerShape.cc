@@ -240,8 +240,8 @@ void
 HFJetShowerShape::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 
   edm::ParameterSetDescription desc;
-  desc.add<edm::InputTag>("TheJets", edm::InputTag("slimmedJets"));
-  desc.add<edm::InputTag>("TheVertices", edm::InputTag("offlineSlimmedPrimaryVertices"));
+  desc.add<edm::InputTag>("TheJets", edm::InputTag("ak4PFJetsCHS"));
+  desc.add<edm::InputTag>("TheVertices", edm::InputTag("offlinePrimaryVerticesWithBS"));
   desc.add<double>("JetPtThreshold",25.);
   desc.add<double>("JetEtaThreshold",2.9);
   desc.add<double>("HFTowerEtaWidth",0.175);

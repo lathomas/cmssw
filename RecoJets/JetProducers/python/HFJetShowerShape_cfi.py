@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 HFJetShowerShape = cms.EDProducer('HFJetShowerShape',
-  TheJets = cms.InputTag('slimmedJets'),
-  TheVertices = cms.InputTag('offlineSlimmedPrimaryVertices'),
+  TheJets = cms.InputTag('ak4PFJetsCHS'),
+  TheVertices = cms.InputTag('offlinePrimaryVerticesWithBS'),
   JetPtThreshold = cms.double(25),
   JetEtaThreshold = cms.double(2.9),
   HFTowerEtaWidth = cms.double(0.175),
