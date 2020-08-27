@@ -251,7 +251,7 @@ HFJetShowerShape::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
   desc.add<double>("JetReferenceRadius",0.4);
   desc.add<double>("StripPtThreshold",10.);
   desc.add<double>("WidthPtThreshold",3.);  
-  descriptions.add("jetHFShowerShapeProducer", desc);
+  descriptions.add("HFJetShowerShape", desc);
 
 }
 
