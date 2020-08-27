@@ -77,8 +77,8 @@ private:
 // constructors and destructor
 //
 HFJetShowerShape::HFJetShowerShape(const edm::ParameterSet& iConfig) {
-  jets_token_ = consumes<edm::View<reco::Jet>>(iConfig.getParameter<edm::InputTag>("TheJets"));
-  vertices_token_ = consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("TheVertices"));
+  jets_token_ = consumes<edm::View<reco::Jet>>(iConfig.getParameter<edm::InputTag>("theJets"));
+  vertices_token_ = consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("theVertices"));
   jetPtThreshold_ = iConfig.getParameter<double>("jetPtThreshold");
   jetEtaThreshold_ = iConfig.getParameter<double>("jetEtaThreshold");
   hfTowerEtaWidth_ = iConfig.getParameter<double>("hfTowerEtaWidth");
