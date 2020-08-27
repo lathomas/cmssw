@@ -1,17 +1,17 @@
 import FWCore.ParameterSet.Config as cms
 
 HFJetShowerShape = cms.EDProducer('HFJetShowerShape',
-  TheJets = cms.InputTag('ak4PFJetsCHS'),
-  TheVertices = cms.InputTag('offlinePrimaryVerticesWithBS'),
-  JetPtThreshold = cms.double(25),
-  JetEtaThreshold = cms.double(2.9),
-  HFTowerEtaWidth = cms.double(0.175),
-  HFTowerPhiWidth = cms.double(0.175),
-  VertexRecoEffcy = cms.double(0.7),
-  OffsetPerPU = cms.double(0.4),
-  JetReferenceRadius = cms.double(0.4),
-  StripPtThreshold = cms.double(10),
-  WidthPtThreshold = cms.double(3)
+  theJets = cms.InputTag('ak4PFJetsCHS'),
+  theVertices = cms.InputTag('offlinePrimaryVerticesWithBS'),
+  jetPtThreshold = cms.double(25),
+  jetEtaThreshold = cms.double(2.9),
+  hfTowerEtaWidth = cms.double(0.175),
+  hfTowerPhiWidth = cms.double(0.175),
+  vertexRecoEffcy = cms.double(0.7),
+  offsetPerPU = cms.double(0.4),
+  jetReferenceRadius = cms.double(0.4),
+  stripPtThreshold = cms.double(10),
+  widthPtThreshold = cms.double(3)
 )
 
 HFJetShowerShapeTask = cms.Task(HFJetShowerShape)

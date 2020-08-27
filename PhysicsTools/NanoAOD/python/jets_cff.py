@@ -568,7 +568,7 @@ from RecoJets.JetProducers.QGTagger_cfi import  QGTagger
 qgtagger=QGTagger.clone(srcJets="updatedJets",srcVertexCollection="offlineSlimmedPrimaryVertices")
 
 from RecoJets.JetProducers.HFJetShowerShape_cfi import  HFJetShowerShape
-hfjetshowershape=HFJetShowerShape.clone(srcJets="updatedJets",srcVertexCollection="offlineSlimmedPrimaryVertices")
+hfjetshowershape=HFJetShowerShape.clone(theJets="updatedJets",theVertices="offlineSlimmedPrimaryVertices")
 
 
 #before cross linking

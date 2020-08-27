@@ -79,15 +79,15 @@ private:
 HFJetShowerShape::HFJetShowerShape(const edm::ParameterSet& iConfig) {
   jets_token_ = consumes<edm::View<reco::Jet>>(iConfig.getParameter<edm::InputTag>("TheJets"));
   vertices_token_ = consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("TheVertices"));
-  jetPtThreshold_ = iConfig.getParameter<double>("JetPtThreshold");
-  jetEtaThreshold_ = iConfig.getParameter<double>("JetEtaThreshold");
-  hfTowerEtaWidth_ = iConfig.getParameter<double>("HFTowerEtaWidth");
-  hfTowerPhiWidth_ = iConfig.getParameter<double>("HFTowerPhiWidth");
-  vertexRecoEffcy_ = iConfig.getParameter<double>("VertexRecoEffcy");
-  offsetPerPU_ = iConfig.getParameter<double>("OffsetPerPU");
-  jetReferenceRadius_ = iConfig.getParameter<double>("JetReferenceRadius");
-  stripPtThreshold_ = iConfig.getParameter<double>("StripPtThreshold");
-  widthPtThreshold_ = iConfig.getParameter<double>("WidthPtThreshold");
+  jetPtThreshold_ = iConfig.getParameter<double>("jetPtThreshold");
+  jetEtaThreshold_ = iConfig.getParameter<double>("jetEtaThreshold");
+  hfTowerEtaWidth_ = iConfig.getParameter<double>("hfTowerEtaWidth");
+  hfTowerPhiWidth_ = iConfig.getParameter<double>("hfTowerPhiWidth");
+  vertexRecoEffcy_ = iConfig.getParameter<double>("vertexRecoEffcy");
+  offsetPerPU_ = iConfig.getParameter<double>("offsetPerPU");
+  jetReferenceRadius_ = iConfig.getParameter<double>("jetReferenceRadius");
+  stripPtThreshold_ = iConfig.getParameter<double>("stripPtThreshold");
+  widthPtThreshold_ = iConfig.getParameter<double>("widthPtThreshold");
 
   produces<edm::ValueMap<float>>("sigmaEtaEta");
   produces<edm::ValueMap<float>>("sigmaPhiPhi");
@@ -222,18 +222,18 @@ void HFJetShowerShape::putInEvent(const std::string& name,
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void HFJetShowerShape::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
-  desc.add<edm::InputTag>("TheJets", edm::InputTag("ak4PFJetsCHS"));
-  desc.add<edm::InputTag>("TheVertices", edm::InputTag("offlinePrimaryVerticesWithBS"));
-  desc.add<double>("JetPtThreshold", 25.);
-  desc.add<double>("JetEtaThreshold", 2.9);
-  desc.add<double>("HFTowerEtaWidth", 0.175);
-  desc.add<double>("HFTowerPhiWidth", 0.175);
-  desc.add<double>("VertexRecoEffcy", 0.7);
-  desc.add<double>("OffsetPerPU", 0.4);
-  desc.add<double>("JetReferenceRadius", 0.4);
-  desc.add<double>("StripPtThreshold", 10.);
-  desc.add<double>("WidthPtThreshold", 3.);
-  descriptions.add("HFJetShowerShape", desc);
+  desc.add<edm::InputTag>("theJets", edm::InputTag("ak4PFJetsCHS"));
+  desc.add<edm::InputTag>("theVertices", edm::InputTag("offlinePrimaryVerticesWithBS"));
+  desc.add<double>("jetPtThreshold", 25.);
+  desc.add<double>("jetEtaThreshold", 2.9);
+  desc.add<double>("hfTowerEtaWidth", 0.175);
+  desc.add<double>("hfTowerPhiWidth", 0.175);
+  desc.add<double>("vertexRecoEffcy", 0.7);
+  desc.add<double>("offsetPerPU", 0.4);
+  desc.add<double>("jetReferenceRadius", 0.4);
+  desc.add<double>("stripPtThreshold", 10.);
+  desc.add<double>("widthPtThreshold", 3.);
+  descriptions.add("hfJetShowerShape", desc);
 }
 
 //define this as a plug-in

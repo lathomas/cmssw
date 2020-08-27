@@ -64,8 +64,8 @@ process.out.outputCommands += ['keep *_QGTagger_*_*']
 #HF shower shape variables
 process.load('RecoJets.JetProducers.HFJetShowerShape_cfi')
 patAlgosToolsTask.add(process.HFJetShowerShape)
-process.HFJetShowerShape.TheJets=cms.InputTag("slimmedJets")
-process.HFJetShowerShape.TheVertices=cms.InputTag("offlineSlimmedPrimaryVertices")
+process.HFJetShowerShape.theJets=cms.InputTag("slimmedJets")
+process.HFJetShowerShape.theVertices=cms.InputTag("offlineSlimmedPrimaryVertices")
 patJetsAK4.userData.userFloats.src += ['HFJetShowerShape:sigmaEtaEta','HFJetShowerShape:sigmaPhiPhi']
 patJetsAK4.userData.userInts.src += ['HFJetShowerShape:centralEtaStripSize','HFJetShowerShape:adjacentEtaStripsSize']
 process.out.outputCommands += ['keep *_HFJetShowerShape_*_*']
