@@ -1,13 +1,13 @@
 # hltGetConfiguration --full --data /dev/CMSSW_12_0_0/HLT --type FULL --unprescale --process HLTFULL --globaltag auto:run3_hlt_FULL --input file:RelVal_Raw_FULL_DATA.root
 
-# /dev/CMSSW_12_0_0/HLT/V5 (CMSSW_12_0_0_pre4)
+# /dev/CMSSW_12_0_0/HLT/V8 (CMSSW_12_0_0_pre5)
 
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process( "HLTFULL" )
 
 process.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/dev/CMSSW_12_0_0/HLT/V5')
+  tableName = cms.string('/dev/CMSSW_12_0_0/HLT/V8')
 )
 
 process.transferSystem = cms.PSet( 
@@ -6720,6 +6720,9 @@ process.SteppingHelixPropagatorAny = cms.ESProducer( "SteppingHelixPropagatorESP
   ApplyRadX0Correction = cms.bool( True ),
   useMagVolumes = cms.bool( True ),
   returnTangentPlane = cms.bool( True )
+)
+process.TrackerAdditionalParametersPerDetESModule = cms.ESProducer( "TrackerAdditionalParametersPerDetESModule",
+  appendToDataLabel = cms.string( "" )
 )
 process.TrackerDigiGeometryESModule = cms.ESProducer( "TrackerDigiGeometryESModule",
   appendToDataLabel = cms.string( "" ),
@@ -133692,8 +133695,8 @@ process.HLT_ZeroBias_LastCollisionInTrain_v3 = cms.Path( process.HLTBeginSequenc
 process.HLT_ZeroBias_FirstBXAfterTrain_v3 = cms.Path( process.HLTBeginSequence + process.hltL1sL1ZeroBiasFirstBunchAfterTrain + process.hltPreZeroBiasFirstBXAfterTrain + process.HLTEndSequence )
 process.AlCa_RPCMuonNormalisation_v13 = cms.Path( process.HLTBeginSequence + process.hltL1sSingleMu5IorSingleMu14erIorSingleMu16er + process.hltPreAlCaRPCMuonNormalisation + process.hltRPCMuonNormaL1Filtered0 + process.HLTMuonLocalRecoSequence + process.HLTEndSequence )
 process.AlCa_HIRPCMuonNormalisation_v1 = cms.Path( process.HLTBeginSequence + process.hltL1sSingleMu7to30 + process.hltPreAlCaHIRPCMuonNormalisation + process.hltHIRPCMuonNormaL1Filtered0 + process.HLTMuonLocalRecoSequence + process.HLTEndSequence )
-process.AlCa_LumiPixelsCounts_Random_v1 = cms.Path( process.HLTBeginSequenceRandom + process.hltPixelTrackerHVOn + process.hltPreAlCaLumiPixelsCountsRandom + process.hltSiPixelDigis + process.hltSiPixelClusters + process.hltAlcaPixelClusterCounts + process.HLTEndSequence )
-process.AlCa_LumiPixelsCounts_ZeroBias_v1 = cms.Path( process.HLTBeginSequence + process.hltPixelTrackerHVOn + process.hltL1sZeroBias + process.hltPreAlCaLumiPixelsCountsZeroBias + process.hltSiPixelDigis + process.hltSiPixelClusters + process.hltAlcaPixelClusterCounts + process.HLTEndSequence )
+process.AlCa_LumiPixelsCounts_Random_v1 = cms.Path( process.HLTBeginSequenceRandom + process.hltScalersRawToDigi + process.hltPixelTrackerHVOn + process.hltPreAlCaLumiPixelsCountsRandom + process.hltSiPixelDigis + process.hltSiPixelClusters + process.hltAlcaPixelClusterCounts + process.HLTEndSequence )
+process.AlCa_LumiPixelsCounts_ZeroBias_v1 = cms.Path( process.HLTBeginSequence + process.hltScalersRawToDigi + process.hltPixelTrackerHVOn + process.hltL1sZeroBias + process.hltPreAlCaLumiPixelsCountsZeroBias + process.hltSiPixelDigis + process.hltSiPixelClusters + process.hltAlcaPixelClusterCounts + process.HLTEndSequence )
 process.MC_ReducedIterativeTracking_v12 = cms.Path( process.HLTBeginSequence + process.hltPreMCReducedIterativeTracking + process.HLTRecoJetSequenceAK4PrePF + process.HLTDoLocalPixelSequence + process.HLTRecopixelvertexingSequence + process.HLTDoLocalStripSequence + process.HLTIterativeTrackingIter02 + process.HLTEndSequence )
 process.MC_PFMET_v17 = cms.Path( process.HLTBeginSequence + process.hltPreMCPFMET + process.HLTAK4PFJetsSequence + process.hltPFMETProducer + process.hltPFMETOpenFilter + process.HLTEndSequence )
 process.MC_AK4PFJets_v17 = cms.Path( process.HLTBeginSequence + process.hltPreMCAK4PFJets + process.HLTAK4PFJetsSequence + process.hltAK4PFJetCollection20Filter + process.HLTEndSequence )
