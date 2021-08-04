@@ -1,13 +1,13 @@
 # hltGetConfiguration --cff --data /dev/CMSSW_12_0_0/GRun --type GRun
 
-# /dev/CMSSW_12_0_0/GRun/V3 (CMSSW_12_0_0_pre4)
+# /dev/CMSSW_12_0_0/GRun/V5 (CMSSW_12_0_0_pre5)
 
 import FWCore.ParameterSet.Config as cms
 
 fragment = cms.ProcessFragment( "HLT" )
 
 fragment.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/dev/CMSSW_12_0_0/GRun/V3')
+  tableName = cms.string('/dev/CMSSW_12_0_0/GRun/V5')
 )
 
 fragment.transferSystem = cms.PSet( 
@@ -90833,8 +90833,8 @@ fragment.HLT_ZeroBias_FirstCollisionInTrain_v4 = cms.Path( fragment.HLTBeginSequ
 fragment.HLT_ZeroBias_LastCollisionInTrain_v3 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sL1ZeroBiasLastBunchInTrain + fragment.hltPreZeroBiasLastCollisionInTrain + fragment.HLTEndSequence )
 fragment.HLT_ZeroBias_FirstBXAfterTrain_v3 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sL1ZeroBiasFirstBunchAfterTrain + fragment.hltPreZeroBiasFirstBXAfterTrain + fragment.HLTEndSequence )
 fragment.AlCa_RPCMuonNormalisation_v13 = cms.Path( fragment.HLTBeginSequence + fragment.hltL1sSingleMu5IorSingleMu14erIorSingleMu16er + fragment.hltPreAlCaRPCMuonNormalisation + fragment.hltRPCMuonNormaL1Filtered0 + fragment.HLTMuonLocalRecoSequence + fragment.HLTEndSequence )
-fragment.AlCa_LumiPixelsCounts_Random_v1 = cms.Path( fragment.HLTBeginSequenceRandom + fragment.hltPixelTrackerHVOn + fragment.hltPreAlCaLumiPixelsCountsRandom + fragment.hltSiPixelDigis + fragment.hltSiPixelClusters + fragment.hltAlcaPixelClusterCounts + fragment.HLTEndSequence )
-fragment.AlCa_LumiPixelsCounts_ZeroBias_v1 = cms.Path( fragment.HLTBeginSequence + fragment.hltPixelTrackerHVOn + fragment.hltL1sZeroBias + fragment.hltPreAlCaLumiPixelsCountsZeroBias + fragment.hltSiPixelDigis + fragment.hltSiPixelClusters + fragment.hltAlcaPixelClusterCounts + fragment.HLTEndSequence )
+fragment.AlCa_LumiPixelsCounts_Random_v1 = cms.Path( fragment.HLTBeginSequenceRandom + fragment.hltScalersRawToDigi + fragment.hltPixelTrackerHVOn + fragment.hltPreAlCaLumiPixelsCountsRandom + fragment.hltSiPixelDigis + fragment.hltSiPixelClusters + fragment.hltAlcaPixelClusterCounts + fragment.HLTEndSequence )
+fragment.AlCa_LumiPixelsCounts_ZeroBias_v1 = cms.Path( fragment.HLTBeginSequence + fragment.hltScalersRawToDigi + fragment.hltPixelTrackerHVOn + fragment.hltL1sZeroBias + fragment.hltPreAlCaLumiPixelsCountsZeroBias + fragment.hltSiPixelDigis + fragment.hltSiPixelClusters + fragment.hltAlcaPixelClusterCounts + fragment.HLTEndSequence )
 fragment.MC_ReducedIterativeTracking_v12 = cms.Path( fragment.HLTBeginSequence + fragment.hltPreMCReducedIterativeTracking + fragment.HLTRecoJetSequenceAK4PrePF + fragment.HLTDoLocalPixelSequence + fragment.HLTRecopixelvertexingSequence + fragment.HLTDoLocalStripSequence + fragment.HLTIterativeTrackingIter02 + fragment.HLTEndSequence )
 fragment.MC_PFMET_v17 = cms.Path( fragment.HLTBeginSequence + fragment.hltPreMCPFMET + fragment.HLTAK4PFJetsSequence + fragment.hltPFMETProducer + fragment.hltPFMETOpenFilter + fragment.HLTEndSequence )
 fragment.MC_AK4PFJets_v17 = cms.Path( fragment.HLTBeginSequence + fragment.hltPreMCAK4PFJets + fragment.HLTAK4PFJetsSequence + fragment.hltAK4PFJetCollection20Filter + fragment.HLTEndSequence )
