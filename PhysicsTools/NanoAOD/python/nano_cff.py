@@ -156,8 +156,36 @@ def nanoAOD_addDeepMET(process, addDeepMETProducer, ResponseTune_Graph):
     return process
 
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-#from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
+
 def nanoAOD_recalibrateMETs(process,isData):
+
+    '''
+    nanoAOD_Puppi_switch = cms.PSet(
+        nanoAOD_MakePuppies_switch = cms.untracked.bool(False)
+    )
+    for modifier in run2_miniAOD_80XLegacy,run2_nanoAOD_94X2016,run2_nanoAOD_94XMiniAODv1,run2_nanoAOD_94XMiniAODv2,run2_nanoAOD_102Xv1,run2_nanoAOD_106Xv1:
+        modifier.toModify(nanoAOD_Puppi_switch, nanoAOD_MakePuppies_switch =  cms.untracked.bool(True))
+        
+
+    if nanoAOD_Puppi_switch.nanoAOD_MakePuppies_switch:
+        from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
+        makePuppiesFromMiniAOD(process,True)
+        process.puppiNoLep.useExistingWeights = True
+        process.puppi.useExistingWeights = True
+        run2_nanoAOD_106Xv1.toModify(process.puppiNoLep, useExistingWeights = False)
+        run2_nanoAOD_106Xv1.toModify(process.puppi, useExistingWeights = False)
+        print("will make Puppies on top of MINIAOD")
+    '''
+    
+    from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
+    makePuppiesFromMiniAOD(process,True)
+    process.puppiNoLep.useExistingWeights = True
+    process.puppi.useExistingWeights = True
+    run2_nanoAOD_106Xv1.toModify(process.puppiNoLep, useExistingWeights = False)
+    run2_nanoAOD_106Xv1.toModify(process.puppi, useExistingWeights = False)
+    print("will make Puppies on top of MINIAOD")
+    
+    #end Laurent
 
     # add DeepMETs
     nanoAOD_DeepMET_switch = cms.PSet(
@@ -203,6 +231,8 @@ def nanoAOD_recalibrateMETs(process,isData):
             reclusterJets = cms.untracked.bool(False),
             )
     run2_nanoAOD_106Xv1.toModify(nanoAOD_PuppiV15_switch,recoMetFromPFCs=True,reclusterJets=True)
+
+
     if nanoAOD_PuppiV15_switch.reclusterJets:
         from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
         from PhysicsTools.PatAlgos.tools.helpers import getPatAlgosToolsTask, addToProcessAndTask
@@ -223,9 +253,8 @@ def nanoAOD_recalibrateMETs(process,isData):
                             genParticles= cms.InputTag('prunedGenParticles'),
                             getJetMCFlavour= False
         )
-
-        process.patJetsPuppi.addGenPartonMatch = cms.bool(False)
-        process.patJetsPuppi.addGenJetMatch = cms.bool(False)
+        print("nanoAOD_PuppiV15_switch.reclusterJets is true")
+        #Laurent
     
     runMetCorAndUncFromMiniAOD(process,isData=isData,metType="Puppi",postfix="Puppi",jetFlavor="AK4PFPuppi", recoMetFromPFCs=bool(nanoAOD_PuppiV15_switch.recoMetFromPFCs), reclusterJets=bool(nanoAOD_PuppiV15_switch.reclusterJets))
     process.nanoSequenceCommon.insert(2,cms.Sequence(process.puppiMETSequence+process.fullPatMetSequencePuppi))
@@ -313,21 +342,6 @@ def nanoAOD_runMETfixEE2017(process,isData):
     process.nanoSequenceCommon.insert(2,process.fullPatMetSequenceFixEE2017)
 
 def nanoAOD_customizeCommon(process):
-    nanoAOD_Puppi_switch = cms.PSet(
-        nanoAOD_MakePuppies_switch = cms.untracked.bool(False)
-    )
-    nanoAOD_MakePuppies_switch = cms.untracked.bool(False)
-    for modifier in run2_miniAOD_80XLegacy,run2_nanoAOD_94X2016,run2_nanoAOD_94XMiniAODv1,run2_nanoAOD_94XMiniAODv2,run2_nanoAOD_102Xv1,run2_nanoAOD_106Xv1:
-        modifier.toModify(nanoAOD_Puppi_switch, nanoAOD_MakePuppies_switch =  cms.untracked.bool(True))
-
-    if nanoAOD_Puppi_switch.nanoAOD_MakePuppies_switch:
-        from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
-        makePuppiesFromMiniAOD(process,True)
-        process.puppiNoLep.useExistingWeights = True
-        process.puppi.useExistingWeights = True
-        run2_nanoAOD_106Xv1.toModify(process.puppiNoLep, useExistingWeights = False)
-        run2_nanoAOD_106Xv1.toModify(process.puppi, useExistingWeights = False)
-        print("will make Puppies on top of MINIAOD")
 
     process = nanoAOD_activateVID(process)
     nanoAOD_addDeepInfo_switch = cms.PSet(
