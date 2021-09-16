@@ -663,7 +663,6 @@ void L1TTauOffline::getProbeTaus(const edm::Event& iEvent,
     TLorentzVector mymu;
     mymu.SetPtEtaPhiE(m_TightMuons[0]->pt(), m_TightMuons[0]->eta(), m_TightMuons[0]->phi(), m_TightMuons[0]->energy());
     int iTau = 0;
-
     // load indices from input provenance config if process history changed, in particular for the first event
     if (iEvent.processHistoryID() != phID_) {
       phID_ = iEvent.processHistoryID();
@@ -703,6 +702,19 @@ void L1TTauOffline::getProbeTaus(const edm::Event& iEvent,
       reco::PFTauRef tauCandidate(taus, iTau);
       TLorentzVector mytau;
       mytau.SetPtEtaPhiE(tauIt->pt(), tauIt->eta(), tauIt->phi(), tauIt->energy());
+
+      if ((*antimu)[tauCandidate].workingPoints.empty()) {
+        LogWarning("This offline tau has no antimu discriminator, skipping");
+        continue;
+      }
+      if ((*antiele)[tauCandidate].workingPoints.empty()) {
+        LogWarning("This offline tau has no antiele discriminator, skipping");
+        continue;
+      }
+      if ((*comb3T)[tauCandidate].workingPoints.empty()) {
+        LogWarning("This offline tau has no comb3T discriminator, skipping");
+        continue;
+      }
 
       if (fabs(tauIt->charge()) == 1 && fabs(tauIt->eta()) < 2.1 && tauIt->pt() > 20 &&
           (*antimu)[tauCandidate].workingPoints[AntiMuWPIndex_] &&
