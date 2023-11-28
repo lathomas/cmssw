@@ -234,33 +234,22 @@ def customiseForOffline(process):
     return process
 
 
-def customizeHLTfor42497(process):
-    for producer in esproducers_by_type(process, 'SiPixelQualityESProducer'):
-        producer.siPixelQualityFromDbLabel = cms.string('')
-        producer.appendToDataLabel = cms.string('')
-        for parName in [
-            'siPixelQualityLabel',
-            'siPixelQualityLabel_RawToDigi',
-        ]:
-            if hasattr(producer, parName):
-                producer.__delattr__(parName)
+def customizeHLTfor43025(process):
+
+    for producer in producers_by_type(process, "PFClusterProducer"):
+        producer.usePFThresholdsFromDB = cms.bool(True)
+
+    for producer in producers_by_type(process, "PFMultiDepthClusterProducer"):
+        producer.usePFThresholdsFromDB = cms.bool(True)
+
+    for producer in producers_by_type(process, "PFRecHitProducer"):
+        if producer.producers[0].name.value() == 'PFHBHERecHitCreator':
+            producer.producers[0].qualityTests[0].usePFThresholdsFromDB = cms.bool(True)        
+        if producer.producers[0].name.value() == 'PFHFRecHitCreator':
+            producer.producers[0].qualityTests[1].usePFThresholdsFromDB = cms.bool(False)
 
     return process
 
-def customizeHLTfor42943(process):
-
-    for prod in producers_by_type(process, 'ClusterCheckerEDProducer'):
-        if hasattr(prod, "MaxNumberOfCosmicClusters"):
-            prod.MaxNumberOfStripClusters = getattr(prod,"MaxNumberOfCosmicClusters")
-            prod.__delattr__("MaxNumberOfCosmicClusters")
-
-    for prod in producers_by_type(process, 'SeedGeneratorFromRegionHitsEDProducer'):
-        if hasattr(prod, "ClusterCheckPSet"):
-            clustCheckPSet = getattr(prod,"ClusterCheckPSet")
-            prod.ClusterCheckPSet.MaxNumberOfStripClusters = getattr(clustCheckPSet,"MaxNumberOfCosmicClusters")
-            clustCheckPSet.__delattr__("MaxNumberOfCosmicClusters")
-
-    return process
 
 # CMSSW version specific customizations
 def customizeHLTforCMSSW(process, menuType="GRun"):
@@ -270,7 +259,6 @@ def customizeHLTforCMSSW(process, menuType="GRun"):
     # add call to action function in proper order: newest last!
     # process = customiseFor12718(process)
 
-    process = customizeHLTfor42497(process)
-    process = customizeHLTfor42943(process)
-
+    process = customizeHLTfor43025(process)
+    
     return process

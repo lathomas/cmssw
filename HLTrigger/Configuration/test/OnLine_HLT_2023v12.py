@@ -1,6 +1,6 @@
-# hltGetConfiguration /frozen/2023/2e34/v1.2/CMSSW_13_2_X/HLT --full --data --type 2023v12 --unprescale --process HLT2023v12 --globaltag auto:run3_hlt_2023v12 --input file:RelVal_Raw_2023v12_DATA.root
+# hltGetConfiguration /frozen/2023/2e34/v1.2/CMSSW_13_3_X/HLT --full --data --type 2023v12 --unprescale --process HLT2023v12 --globaltag auto:run3_hlt_2023v12 --input file:RelVal_Raw_2023v12_DATA.root
 
-# /frozen/2023/2e34/v1.2/CMSSW_13_2_X/HLT/V8 (CMSSW_13_2_3)
+# /frozen/2023/2e34/v1.2/CMSSW_13_3_X/HLT/V3 (CMSSW_13_3_0)
 
 import FWCore.ParameterSet.Config as cms
 
@@ -12,7 +12,7 @@ process = cms.Process( "HLT2023v12" )
 process.ProcessAcceleratorCUDA = ProcessAcceleratorCUDA()
 
 process.HLTConfigVersion = cms.PSet(
-  tableName = cms.string('/frozen/2023/2e34/v1.2/CMSSW_13_2_X/HLT/V8')
+  tableName = cms.string('/frozen/2023/2e34/v1.2/CMSSW_13_3_X/HLT/V3')
 )
 
 process.transferSystem = cms.PSet( 
@@ -4622,7 +4622,10 @@ process.ctppsGeometryESModule = cms.ESProducer( "CTPPSGeometryESModule",
 )
 process.ctppsInterpolatedOpticalFunctionsESSource = cms.ESProducer( "CTPPSInterpolatedOpticalFunctionsESSource",
   lhcInfoLabel = cms.string( "" ),
+  lhcInfoPerFillLabel = cms.string( "" ),
+  lhcInfoPerLSLabel = cms.string( "" ),
   opticsLabel = cms.string( "" ),
+  useNewLHCInfo = cms.bool( False ),
   appendToDataLabel = cms.string( "" )
 )
 process.ecalDetIdAssociator = cms.ESProducer( "DetIdAssociatorESProducer",
@@ -6343,8 +6346,7 @@ process.siPixelGainCalibrationForHLTGPU = cms.ESProducer( "SiPixelGainCalibratio
   appendToDataLabel = cms.string( "" )
 )
 process.siPixelQualityESProducer = cms.ESProducer( "SiPixelQualityESProducer",
-  siPixelQualityLabel = cms.string( "" ),
-  siPixelQualityLabel_RawToDigi = cms.string( "" ),
+  siPixelQualityFromDbLabel = cms.string( "" ),
   ListOfRecordToMerge = cms.VPSet( 
     cms.PSet(  record = cms.string( "SiPixelQualityFromDbRcd" ),
       tag = cms.string( "" )
@@ -6515,6 +6517,7 @@ process.hltGtStage2ObjectMap = cms.EDProducer( "L1TGlobalProducer",
     AlgorithmTriggersUnprescaled = cms.bool( True ),
     RequireMenuToMatchAlgoBlkInput = cms.bool( True ),
     AlgorithmTriggersUnmasked = cms.bool( True ),
+    AXOL1TLModelVersion = cms.string( "" ),
     useMuonShowers = cms.bool( True ),
     resetPSCountersEachLumiSec = cms.bool( True ),
     semiRandomInitialPSCounters = cms.bool( False ),
@@ -6665,6 +6668,8 @@ process.hltEcalUncalibRecHitGPU = cms.EDProducer( "EcalUncalibRecHitProducerGPU"
     digisLabelEE = cms.InputTag( 'hltEcalDigisGPU','eeDigis' ),
     recHitsLabelEB = cms.string( "EcalUncalibRecHitsEB" ),
     recHitsLabelEE = cms.string( "EcalUncalibRecHitsEE" ),
+    timeCalibTag = cms.ESInputTag( "","" ),
+    timeOffsetTag = cms.ESInputTag( "","" ),
     EBtimeFitLimits_Lower = cms.double( 0.2 ),
     EBtimeFitLimits_Upper = cms.double( 1.4 ),
     EEtimeFitLimits_Lower = cms.double( 0.2 ),
@@ -6766,6 +6771,8 @@ process.hltEcalRecHit = cms.EDProducer( "EcalRecHitProducer",
     EELaserMAX = cms.double( 8.0 ),
     logWarningEtThreshold_EB_FE = cms.double( 50.0 ),
     recoverEEIsolatedChannels = cms.bool( False ),
+    timeCalibTag = cms.ESInputTag( "","" ),
+    timeOffsetTag = cms.ESInputTag( "","" ),
     skipTimeCalib = cms.bool( False )
 )
 process.hltEcalPreshowerDigis = cms.EDProducer( "ESRawToDigi",
@@ -11261,6 +11268,8 @@ process.hltEcalRecHitCPUOnly = cms.EDProducer( "EcalRecHitProducer",
     EELaserMAX = cms.double( 8.0 ),
     logWarningEtThreshold_EB_FE = cms.double( 50.0 ),
     recoverEEIsolatedChannels = cms.bool( False ),
+    timeCalibTag = cms.ESInputTag( "","" ),
+    timeOffsetTag = cms.ESInputTag( "","" ),
     skipTimeCalib = cms.bool( False )
 )
 process.hltTowerMakerForAllCPUOnly = cms.EDProducer( "CaloTowersCreator",
@@ -38519,6 +38528,7 @@ process.hltTrk50Filter = cms.EDFilter( "HLTDeDxFilter",
     minDEDx = cms.double( -1.0 ),
     minPT = cms.double( 50.0 ),
     minNOM = cms.double( -1.0 ),
+    minETA = cms.double( 0.0 ),
     maxETA = cms.double( 5.5 ),
     minNumValidHits = cms.double( 5.0 ),
     maxNHitMissIn = cms.double( 0.0 ),
@@ -58510,7 +58520,18 @@ process.hltParticleNetJetTagInfos = cms.EDProducer( "DeepBoostedJetTagInfoProduc
     pf_candidates = cms.InputTag( "hltParticleFlow" ),
     jets = cms.InputTag( "hltPFJetForBtag" ),
     puppi_value_map = cms.InputTag( "" ),
-    vertex_associator = cms.InputTag( 'hltPrimaryVertexAssociation','original' )
+    vertex_associator = cms.InputTag( 'hltPrimaryVertexAssociation','original' ),
+    use_scouting_features = cms.bool( False ),
+    normchi2_value_map = cms.InputTag( "" ),
+    dz_value_map = cms.InputTag( "" ),
+    dxy_value_map = cms.InputTag( "" ),
+    dzsig_value_map = cms.InputTag( "" ),
+    dxysig_value_map = cms.InputTag( "" ),
+    lostInnerHits_value_map = cms.InputTag( "" ),
+    quality_value_map = cms.InputTag( "" ),
+    trkPt_value_map = cms.InputTag( "" ),
+    trkEta_value_map = cms.InputTag( "" ),
+    trkPhi_value_map = cms.InputTag( "" )
 )
 process.hltParticleNetONNXJetTags = cms.EDProducer( "BoostedJetONNXJetTagsProducer",
     src = cms.InputTag( "hltParticleNetJetTagInfos" ),
@@ -58524,6 +58545,8 @@ process.hltParticleNetONNXJetTags = cms.EDProducer( "BoostedJetONNXJetTagsProduc
       'probuds',
       'probg',
       'ptcorr' ),
+    jets = cms.InputTag( "" ),
+    produceValueMap = cms.untracked.bool( False ),
     debugMode = cms.untracked.bool( False )
 )
 process.hltParticleNetDiscriminatorsJetTags = cms.EDProducer( "BTagProbabilityToDiscriminator",
@@ -64587,7 +64610,18 @@ process.hltParticleNetJetTagsInfosAK8 = cms.EDProducer( "DeepBoostedJetTagInfoPr
     pf_candidates = cms.InputTag( "hltParticleFlow" ),
     jets = cms.InputTag( "hltPFJetForPNetAK8" ),
     puppi_value_map = cms.InputTag( "" ),
-    vertex_associator = cms.InputTag( 'hltPrimaryVertexAssociation','original' )
+    vertex_associator = cms.InputTag( 'hltPrimaryVertexAssociation','original' ),
+    use_scouting_features = cms.bool( False ),
+    normchi2_value_map = cms.InputTag( "" ),
+    dz_value_map = cms.InputTag( "" ),
+    dxy_value_map = cms.InputTag( "" ),
+    dzsig_value_map = cms.InputTag( "" ),
+    dxysig_value_map = cms.InputTag( "" ),
+    lostInnerHits_value_map = cms.InputTag( "" ),
+    quality_value_map = cms.InputTag( "" ),
+    trkPt_value_map = cms.InputTag( "" ),
+    trkEta_value_map = cms.InputTag( "" ),
+    trkPhi_value_map = cms.InputTag( "" )
 )
 process.hltParticleNetONNXJetTagsAK8 = cms.EDProducer( "BoostedJetONNXJetTagsProducer",
     src = cms.InputTag( "hltParticleNetJetTagsInfosAK8" ),
@@ -64604,6 +64638,8 @@ process.hltParticleNetONNXJetTagsAK8 = cms.EDProducer( "BoostedJetONNXJetTagsPro
       'probQCD2hf',
       'probQCD1hf',
       'probQCD0hf' ),
+    jets = cms.InputTag( "" ),
+    produceValueMap = cms.untracked.bool( False ),
     debugMode = cms.untracked.bool( False )
 )
 process.hltParticleNetDiscriminatorsJetTagsAK8 = cms.EDProducer( "BTagProbabilityToDiscriminator",
@@ -67361,7 +67397,7 @@ process.hltDisplacedhltIter4PixelLessTrackingRegionsForGlbDisplacedMuons = cms.E
 )
 process.hltDisplacedhltIter4PixelLessClusterCheckForGlbDisplacedMuons = cms.EDProducer( "ClusterCheckerEDProducer",
     doClusterCheck = cms.bool( False ),
-    MaxNumberOfCosmicClusters = cms.uint32( 800000 ),
+    MaxNumberOfStripClusters = cms.uint32( 800000 ),
     ClusterCollectionLabel = cms.InputTag( "hltSiStripClusters" ),
     MaxNumberOfPixelClusters = cms.uint32( 40000 ),
     PixelClusterCollectionLabel = cms.InputTag( "hltSiPixelClusters" ),
@@ -67602,7 +67638,7 @@ process.hltDisplacedhltIter4PixelLessTrackingRegionsForDisplacedTkMuons = cms.ED
 )
 process.hltDisplacedhltIter4PixelLessClusterCheckForDisplacedTkMuons = cms.EDProducer( "ClusterCheckerEDProducer",
     doClusterCheck = cms.bool( False ),
-    MaxNumberOfCosmicClusters = cms.uint32( 800000 ),
+    MaxNumberOfStripClusters = cms.uint32( 800000 ),
     ClusterCollectionLabel = cms.InputTag( "hltSiStripClusters" ),
     MaxNumberOfPixelClusters = cms.uint32( 40000 ),
     PixelClusterCollectionLabel = cms.InputTag( "hltSiPixelClusters" ),
@@ -68738,7 +68774,7 @@ process.hltDisplacedhltIter4PFlowPixelLessTrackingRegionsForTau = cms.EDProducer
 )
 process.hltDisplacedhltIter4PFlowPixelLessClusterCheckForTau = cms.EDProducer( "ClusterCheckerEDProducer",
     doClusterCheck = cms.bool( False ),
-    MaxNumberOfCosmicClusters = cms.uint32( 800000 ),
+    MaxNumberOfStripClusters = cms.uint32( 800000 ),
     ClusterCollectionLabel = cms.InputTag( "hltSiStripClusters" ),
     MaxNumberOfPixelClusters = cms.uint32( 40000 ),
     PixelClusterCollectionLabel = cms.InputTag( "hltSiPixelClusters" ),
@@ -71297,7 +71333,7 @@ process.hltIter1PFlowPixelTrackingRegionsForDisplaced = cms.EDProducer( "Candida
 )
 process.hltIter1PFlowPixelClusterCheckForDisplaced = cms.EDProducer( "ClusterCheckerEDProducer",
     doClusterCheck = cms.bool( False ),
-    MaxNumberOfCosmicClusters = cms.uint32( 50000 ),
+    MaxNumberOfStripClusters = cms.uint32( 50000 ),
     ClusterCollectionLabel = cms.InputTag( "hltSiStripClustersRegForDisplaced" ),
     MaxNumberOfPixelClusters = cms.uint32( 40000 ),
     PixelClusterCollectionLabel = cms.InputTag( "hltSiPixelClustersRegForDisplaced" ),
@@ -71597,7 +71633,7 @@ process.hltIter2PFlowPixelTrackingRegionsForDisplaced = cms.EDProducer( "Candida
 )
 process.hltIter2PFlowPixelClusterCheckForDisplaced = cms.EDProducer( "ClusterCheckerEDProducer",
     doClusterCheck = cms.bool( False ),
-    MaxNumberOfCosmicClusters = cms.uint32( 50000 ),
+    MaxNumberOfStripClusters = cms.uint32( 50000 ),
     ClusterCollectionLabel = cms.InputTag( "hltSiStripClustersRegForDisplaced" ),
     MaxNumberOfPixelClusters = cms.uint32( 40000 ),
     PixelClusterCollectionLabel = cms.InputTag( "hltSiPixelClustersRegForDisplaced" ),
@@ -72516,7 +72552,7 @@ process.hltDisplacedhltIter4PFlowPixelLessTrackingRegions = cms.EDProducer( "Can
 )
 process.hltDisplacedhltIter4PFlowPixelLessClusterCheck = cms.EDProducer( "ClusterCheckerEDProducer",
     doClusterCheck = cms.bool( False ),
-    MaxNumberOfCosmicClusters = cms.uint32( 800000 ),
+    MaxNumberOfStripClusters = cms.uint32( 800000 ),
     ClusterCollectionLabel = cms.InputTag( "hltSiStripClustersRegForDisplaced" ),
     MaxNumberOfPixelClusters = cms.uint32( 40000 ),
     PixelClusterCollectionLabel = cms.InputTag( "hltSiPixelClustersRegForDisplaced" ),
